@@ -105,59 +105,13 @@ The project runs in 10 sequential notebook sessions:
 - Internet access enabled in Kaggle notebook settings
 - ~25 GB free disk space per caching session
 
-Before running any notebook, do a find-and-replace of `YOUR_KAGGLE_USERNAME` with your actual Kaggle username throughout all notebooks.
 
-### Datasets You Will Need
 
-| Dataset | Contents | Size |
-|---------|----------|------|
-| `YOUR_KAGGLE_USERNAME/moshi-cache-s0p0` … `s2p3` (×12) | Teacher hidden states + top-256 logits | ~18 GB each |
-| `YOUR_KAGGLE_USERNAME/moshi-cache-codes` | Mimi codes for all 60,000 windows | 2.3 GB |
-| `YOUR_KAGGLE_USERNAME/moshi-frozen-heads` | Frozen Moshi head weights | ~2 GB |
-| `YOUR_KAGGLE_USERNAME/moshi-repo` | Moshi source (editable install) | — |
-| `YOUR_KAGGLE_USERNAME/moshi-p1-ckpt` | Phase 1 checkpoint (auto-created) | 6.6 GB |
-| `YOUR_KAGGLE_USERNAME/moshi-p2-ckpt` | Phase 2 checkpoint (auto-created) | 6.6 GB |
-| `YOUR_KAGGLE_USERNAME/moshi-p3-ckpt` | Phase 3 checkpoint (auto-created) | 6.6 GB |
+### Datasets
 
 ---
 
-### Step 1 — Smoke Test
-
-Open `02_session-s0-smoke-test.ipynb` on Kaggle. Attach `moshi-repo`.  
-Run all cells. Every cell must complete with no OOM errors and finite losses before proceeding. This is a hard prerequisite — do not skip it.
-
-### Step 2 — Generate Teacher Cache
-
-Run `04_session-s2-full-cache.ipynb` **12 times**, once per combination:
-```
-SHARD_IDX ∈ {0, 1, 2}
-PART_IDX  ∈ {0, 1, 2, 3}
-```
-Each run produces one Kaggle dataset (`moshi-cache-s{N}p{M}`, ~18 GB). Then run `05_session-s14-codes-cache.ipynb` once to produce `moshi-cache-codes`. Verify all 13 datasets exist using the verification cell at the end of the S2 notebook before proceeding.
-
-### Step 3 — Train Phase 1
-
-Attach all 12 cache datasets + `moshi-frozen-heads` + `moshi-cache-codes` + `moshi-repo`.  
-Run `06_phase1-hidden-bootstrap.ipynb` until val CosSim > 0.80 (expect ~2,000 steps, ~2–3 hours).  
-The notebook auto-saves and uploads the checkpoint to `moshi-p1-ckpt`.
-
-### Step 4 — Train Phase 2
-
-Attach everything from Step 3 plus `moshi-p1-ckpt`.  
-Run `07_phase2-logit-alignment.ipynb` until val text KL < 0.20 (expect ~600 steps).  
-Checkpoint saved to `moshi-p2-ckpt`.
-
-### Step 5 — Train Phase 3
-
-Attach everything from Step 3 plus `moshi-p2-ckpt`.  
-Run `08_phase3-attention-polish.ipynb` for ~1,000 steps.  
-Note: Phase 3 re-loads the teacher onto `cuda:1` in inference mode — both GPUs must be available.  
-Checkpoint saved to `moshi-p3-ckpt`.
-
-### Step 6 — Run the Demo
-
-Attach `moshi-p3-ckpt` + `moshi-frozen-heads` + `moshi-repo`.  
-Run `10_student-web-demo.ipynb` and open the printed ngrok URL in a browser with microphone access enabled.
+Training data consists of ~500h of LibriSpeech audio (train-clean-100, train-clean-360, train-other-500), pre-processed into 60,000 non-overlapping 30s windows. Teacher hidden states and top-256 text logits were cached offline (~220 GB total). Pre-trained checkpoints and the full cache are available on request.
 
 ---
 
