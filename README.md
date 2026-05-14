@@ -2,7 +2,10 @@
 
 Knowledge distillation of [Moshi](https://github.com/kyutai-labs/moshi) — Kyutai's 7.7B-parameter real-time voice language model — into a 1.7B student using SmolLM2, running entirely on free-tier Kaggle dual-T4 GPUs.
 
-> **Authors:** Taslim Hossain Tamim · Afia Mubassira Ali Raisa · Sami Uddin 
+> **Authors:**  
+> Afia Mubassira Ali Raisa (ID: 2121812642) · Taslim Hossain Tamim (ID: 2233525642) · Sami Uddin (ID: 2231505042)  
+> **Course:** CSE 465 — Pattern Recognition and Neural Network  
+> **Department of Computer Science and Engineering, North South University**
 
 ---
 
